@@ -5,12 +5,12 @@
 
 Name:           golang-github-stretchr-testify
 Version:        0
-Release:        0.3.git%{shortcommit}%{?dist}
+Release:        0.4.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            http://godoc.org/%{import_path}
 Source0:        https://%{import_path}/archive/%{commit}/testify-%{shortcommit}.tar.gz
-BuildArch:      noarch
+ExclusiveArch:  %{ix86} x86_64 %{arm}
 
 %description
 Thou Shalt Write Tests
@@ -73,6 +73,9 @@ done
 %{gopath}/src/%{import_path}/suite/*.go
 
 %changelog
+* Tue Oct 14 2014 jchaloup <jchaloup@redhat.com> - 0-0.4.gitda775f0
+- BuildArch to ExclusiveArch
+
 * Mon Sep 15 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 0-0.3.gitda775f0
 - preserve timestamps of copied files
 
