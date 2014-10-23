@@ -1,16 +1,24 @@
 %global debug_package   %{nil}
-%global import_path     github.com/stretchr/testify
-%global commit          da775f0337260efbac0fce9764cee5bd3e8c85b8
+%global provider        github
+%global provider_tld    com
+%global project         stretchr
+%global repo            testify
+%global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
+%global commit          d6577e08ec30538639ac0ea38b562b6f250e9055
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
-Name:           golang-github-stretchr-testify
+Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.3.git%{shortcommit}%{?dist}
+Release:        0.5.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            http://godoc.org/%{import_path}
-Source0:        https://%{import_path}/archive/%{commit}/testify-%{shortcommit}.tar.gz
+Source0:        https://%{import_path}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
+%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 BuildArch:      noarch
+%else
+ExclusiveArch:  %{ix86} x86_64 %{arm}
+%endif
 
 %description
 Thou Shalt Write Tests
@@ -37,7 +45,7 @@ Go code (golang) set of packages that provide many tools for testifying that
 your code will behave as you intend.
 
 %prep
-%setup -q -n testify-%{commit}
+%setup -q -n %{repo}-%{commit}
 
 mv LICENCE.txt LICENSE.txt
 
@@ -73,6 +81,11 @@ done
 %{gopath}/src/%{import_path}/suite/*.go
 
 %changelog
+* Thu Oct 23 2014 jchaloup <jchaloup@redhat.com> - 0-0.5.gitd6577e0
+- Bump to upstream d6577e08ec30538639ac0ea38b562b6f250e9055
+- Spec file polishing to follow go draft
+  related: #1141872
+
 * Mon Sep 15 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 0-0.3.gitda775f0
 - preserve timestamps of copied files
 
