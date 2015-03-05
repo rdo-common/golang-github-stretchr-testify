@@ -4,12 +4,12 @@
 %global project         stretchr
 %global repo            testify
 %global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
-%global commit          d6577e08ec30538639ac0ea38b562b6f250e9055
+%global commit          e4ec8152c15fc46bd5056ce65997a07c7d415325
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.5.git%{shortcommit}%{?dist}
+Release:        0.6.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            http://godoc.org/%{import_path}
@@ -81,6 +81,10 @@ done
 %{gopath}/src/%{import_path}/suite/*.go
 
 %changelog
+* Thu Mar 05 2015 jchaloup <jchaloup@redhat.com> - 0-0.6.gite4ec815
+- Bump to upstream e4ec8152c15fc46bd5056ce65997a07c7d415325
+  related: #1141872
+
 * Thu Oct 23 2014 jchaloup <jchaloup@redhat.com> - 0-0.5.gitd6577e0
 - Bump to upstream d6577e08ec30538639ac0ea38b562b6f250e9055
 - Spec file polishing to follow go draft
