@@ -9,10 +9,10 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.6.git%{shortcommit}%{?dist}
+Release:        0.7.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
-URL:            http://godoc.org/%{import_path}
+URL:            http://%{import_path}
 Source0:        https://%{import_path}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 BuildArch:      noarch
@@ -81,6 +81,10 @@ done
 %{gopath}/src/%{import_path}/suite/*.go
 
 %changelog
+* Fri Mar 06 2015 jchaloup <jchaloup@redhat.com> - 0-0.7.gite4ec815
+- update URL to point to github repository
+  related: #1141872
+
 * Thu Mar 05 2015 jchaloup <jchaloup@redhat.com> - 0-0.6.gite4ec815
 - Bump to upstream e4ec8152c15fc46bd5056ce65997a07c7d415325
   related: #1141872
