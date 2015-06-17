@@ -9,7 +9,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.7.git%{shortcommit}%{?dist}
+Release:        0.8.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            http://%{import_path}
@@ -81,6 +81,9 @@ done
 %{gopath}/src/%{import_path}/suite/*.go
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.8.gite4ec815
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Fri Mar 06 2015 jchaloup <jchaloup@redhat.com> - 0-0.7.gite4ec815
 - update URL to point to github repository
   related: #1141872
