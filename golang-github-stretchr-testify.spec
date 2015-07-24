@@ -4,12 +4,12 @@
 %global project         stretchr
 %global repo            testify
 %global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
-%global commit          e4ec8152c15fc46bd5056ce65997a07c7d415325
+%global commit          089c7181b8c728499929ff09b62d3fdd8df8adff
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
-Version:        0
-Release:        0.8.git%{shortcommit}%{?dist}
+Version:        1.0
+Release:        0.1.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            http://%{import_path}
@@ -28,6 +28,8 @@ your code will behave as you intend.
 
 %package devel
 BuildRequires:  golang >= 1.2.1-3
+# cyclic deps
+#BuildRequires:  golang(github.com/stretchr/objx)
 Requires:       golang >= 1.2.1-3
 Requires:       golang(github.com/stretchr/objx)
 Summary:        Tools for testifying that your code will behave as you intend
@@ -81,6 +83,10 @@ done
 %{gopath}/src/%{import_path}/suite/*.go
 
 %changelog
+* Fri Jul 24 2015 jchaloup <jchaloup@redhat.com> - 1.0-0.1.git089c718
+- Bump to upstream 089c7181b8c728499929ff09b62d3fdd8df8adff
+  resolves: #1246684
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.8.gite4ec815
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
