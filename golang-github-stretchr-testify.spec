@@ -1,23 +1,62 @@
+%if 0%{?fedora} || 0%{?rhel} == 6
+%global with_devel 1
+%global with_bundled 0
+%global with_debug 0
+# as long as there is circular dependency between 
+# golang-github-stretchr-testify and golang-github-stretchr-objx
+# there can not by test
+%global with_check 0
+%global with_unit_test 1
+%else
+%global with_devel 0
+%global with_bundled 0
+%global with_debug 0
+%global with_check 0
+%global with_unit_test 0
+%endif
+
+%if 0%{?with_debug}
+%global _dwz_low_mem_die_limit 0
+%else
 %global debug_package   %{nil}
+%endif
+
+%define copying() \
+%if 0%{?fedora} >= 21 || 0%{?rhel} >= 7 \
+%license %{*} \
+%else \
+%doc %{*} \
+%endif
+
 %global provider        github
 %global provider_tld    com
 %global project         stretchr
 %global repo            testify
-%global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
+# https://github.com/stretchr/testify
+%global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
+%global import_path     %{provider_prefix}
 %global commit          089c7181b8c728499929ff09b62d3fdd8df8adff
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        1.0
-Release:        0.1.git%{shortcommit}%{?dist}
+Release:        0.2.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
-URL:            http://%{import_path}
-Source0:        https://%{import_path}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
-%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
-BuildArch:      noarch
+URL:            https://%{provider_prefix}
+Source0:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
+
+# If go_arches not defined fall through to implicit golang archs
+%if 0%{?go_arches:1}
+ExclusiveArch:  %{go_arches}
 %else
-ExclusiveArch:  %{ix86} x86_64 %{arm}
+ExclusiveArch:   %{ix86} x86_64 %{arm}
+%endif
+# If gccgo_arches does not fit or is not defined fall through to golang
+%ifarch 0%{?gccgo_arches}
+BuildRequires:   gcc-go >= %{gccgo_min_vers}
+%else
+BuildRequires:   golang
 %endif
 
 %description
@@ -26,25 +65,63 @@ Thou Shalt Write Tests
 Go code (golang) set of packages that provide many tools for testifying that
 your code will behave as you intend.
 
+%if 0%{?with_devel}
 %package devel
-BuildRequires:  golang >= 1.2.1-3
+Summary:       %{summary}
+BuildArch:     noarch
+
+%if 0%{?with_check}
 # cyclic deps
-#BuildRequires:  golang(github.com/stretchr/objx)
-Requires:       golang >= 1.2.1-3
-Requires:       golang(github.com/stretchr/objx)
-Summary:        Tools for testifying that your code will behave as you intend
-Provides:       golang(%{import_path}) = %{version}-%{release}
-Provides:       golang(%{import_path}/assert) = %{version}-%{release}
-Provides:       golang(%{import_path}/http) = %{version}-%{release}
-Provides:       golang(%{import_path}/mock) = %{version}-%{release}
-Provides:       golang(%{import_path}/require) = %{version}-%{release}
-Provides:       golang(%{import_path}/suite) = %{version}-%{release}
+#BuildRequires: golang(github.com/stretchr/objx)
+%endif
+
+Requires:      golang(github.com/stretchr/objx)
+
+Provides:      golang(%{import_path}) = %{version}-%{release}
+Provides:      golang(%{import_path}/assert) = %{version}-%{release}
+Provides:      golang(%{import_path}/http) = %{version}-%{release}
+Provides:      golang(%{import_path}/mock) = %{version}-%{release}
+Provides:      golang(%{import_path}/require) = %{version}-%{release}
+Provides:      golang(%{import_path}/suite) = %{version}-%{release}
 
 %description devel
-Thou Shalt Write Tests
+%{summary}
 
-Go code (golang) set of packages that provide many tools for testifying that
-your code will behave as you intend.
+This package contains library source intended for
+building other packages which use import path with
+%{import_path} prefix.
+%endif
+
+%if 0%{?with_unit_test}
+%package unit-test
+Summary:         Unit tests for %{name} package
+# If go_arches not defined fall through to implicit golang archs
+%if 0%{?go_arches:1}
+ExclusiveArch:  %{go_arches}
+%else
+ExclusiveArch:   %{ix86} x86_64 %{arm}
+%endif
+# If gccgo_arches does not fit or is not defined fall through to golang
+%ifarch 0%{?gccgo_arches}
+BuildRequires:   gcc-go >= %{gccgo_min_vers}
+%else
+BuildRequires:   golang
+%endif
+
+%if 0%{?with_check}
+#Here comes all BuildRequires: PACKAGE the unit tests
+#in %%check section need for running
+%endif
+
+# test subpackage tests code from devel subpackage
+Requires:        %{name}-devel = %{version}-%{release}
+
+%description unit-test
+%{summary}
+
+This package contains unit tests for project
+providing packages with %{import_path} prefix.
+%endif
 
 %prep
 %setup -q -n %{repo}-%{commit}
@@ -54,35 +131,67 @@ mv LICENCE.txt LICENSE.txt
 %build
 
 %install
-install -d %{buildroot}/%{gopath}/src/%{import_path}
-cp -pav *.go %{buildroot}/%{gopath}/src/%{import_path}
-
-for d in assert http mock require suite
-do
-    cp -pav $d %{buildroot}/%{gopath}/src/%{import_path}/
+# source codes for building projects
+%if 0%{?with_devel}
+install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
+# find all *.go but no *_test.go files and generate devel.file-list
+for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
+    install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
+    cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
+    echo "%%{gopath}/src/%%{import_path}/$file" >> devel.file-list
 done
+%endif
+
+# testing files for this project
+%if 0%{?with_unit_test}
+install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
+# find all *_test.go files and generate unit-test.file-list
+for file in $(find . -iname "*_test.go"); do
+    install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
+    cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
+    echo "%%{gopath}/src/%%{import_path}/$file" >> unit-test.file-list
+done
+%endif
 
 %check
-# as long as there is circular dependency between 
-# golang-github-stretchr-testify and golang-github-stretchr-objx
-# there can not by test
+%if 0%{?with_check} && 0%{?with_unit_test} && 0%{?with_devel}
+%ifarch 0%{?gccgo_arches}
+function gotest { %{gcc_go_test} "$@"; }
+%else
+%if 0%{?golang_test:1}
+function gotest { %{golang_test} "$@"; }
+%else
+function gotest { go test "$@"; }
+%endif
+%endif
 
-%files devel
-%doc LICENSE.txt README.md
+export GOPATH=%{buildroot}/%{gopath}:%{gopath}
+gotest %{import_path}
+gotest %{import_path}/assert
+gotest %{import_path}/mock
+gotest %{import_path}/require
+gotest %{import_path}/suite
+%endif
+
+%if 0%{?with_devel}
+%files devel -f devel.file-list
+%copying LICENSE.txt
+%doc README.md
+%dir %{gopath}/src/%{provider}.%{provider_tld}/%{project}
 %dir %{gopath}/src/%{import_path}
-%dir %{gopath}/src/%{import_path}/assert
-%dir %{gopath}/src/%{import_path}/http
-%dir %{gopath}/src/%{import_path}/mock
-%dir %{gopath}/src/%{import_path}/require
-%dir %{gopath}/src/%{import_path}/suite
-%{gopath}/src/%{import_path}/*.go
-%{gopath}/src/%{import_path}/assert/*.go
-%{gopath}/src/%{import_path}/http/*.go
-%{gopath}/src/%{import_path}/mock/*.go
-%{gopath}/src/%{import_path}/require/*.go
-%{gopath}/src/%{import_path}/suite/*.go
+%endif
+
+%if 0%{?with_unit_test}
+%files unit-test -f unit-test.file-list
+%copying 
+%doc README.md
+%endif
 
 %changelog
+* Mon Aug 10 2015 Fridolin Pokorny <fpokorny@redhat.com> - 1.0-0.2.git089c718
+- Update spec file to spec-2.0
+  relates: #1246684
+
 * Fri Jul 24 2015 jchaloup <jchaloup@redhat.com> - 1.0-0.1.git089c718
 - Bump to upstream 089c7181b8c728499929ff09b62d3fdd8df8adff
   resolves: #1246684
