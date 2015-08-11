@@ -40,7 +40,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        1.0
-Release:        0.2.git%{shortcommit}%{?dist}
+Release:        0.3.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
@@ -72,7 +72,7 @@ BuildArch:     noarch
 
 %if 0%{?with_check}
 # cyclic deps
-#BuildRequires: golang(github.com/stretchr/objx)
+BuildRequires: golang(github.com/stretchr/objx)
 %endif
 
 Requires:      golang(github.com/stretchr/objx)
@@ -183,11 +183,15 @@ gotest %{import_path}/suite
 
 %if 0%{?with_unit_test}
 %files unit-test -f unit-test.file-list
-%copying 
+%copying LICENSE.txt
 %doc README.md
 %endif
 
 %changelog
+* Tue Aug 11 2015 jchaloup <jchaloup@redhat.com> - 1.0-0.3.git089c718
+- Add missing license in unit-test, BR of devel can be uncommented out
+  relates: #1246684
+
 * Mon Aug 10 2015 Fridolin Pokorny <fpokorny@redhat.com> - 1.0-0.2.git089c718
 - Update spec file to spec-2.0
   relates: #1246684
