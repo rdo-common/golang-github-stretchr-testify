@@ -40,7 +40,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        1.0
-Release:        0.3.git%{shortcommit}%{?dist}
+Release:        0.4.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
@@ -188,6 +188,9 @@ gotest %{import_path}/suite
 %endif
 
 %changelog
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.0-0.4.git089c718
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Tue Aug 11 2015 jchaloup <jchaloup@redhat.com> - 1.0-0.3.git089c718
 - Add missing license in unit-test, BR of devel can be uncommented out
   relates: #1246684
