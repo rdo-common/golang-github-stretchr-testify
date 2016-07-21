@@ -40,7 +40,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        1.0
-Release:        0.5.git%{shortcommit}%{?dist}
+Release:        0.6.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
@@ -188,6 +188,9 @@ gotest %{import_path}/suite
 %endif
 
 %changelog
+* Thu Jul 21 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0-0.6.git089c718
+- https://fedoraproject.org/wiki/Changes/golang1.7
+
 * Mon Feb 22 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0-0.5.git089c718
 - https://fedoraproject.org/wiki/Changes/golang1.6
 
