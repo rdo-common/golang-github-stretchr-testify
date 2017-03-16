@@ -39,12 +39,12 @@
 # https://github.com/stretchr/testify
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     %{provider_prefix}
-%global commit          089c7181b8c728499929ff09b62d3fdd8df8adff
+%global commit          976c720a22c8eb4eb6a0b4348ad85ad12491a506
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        1.0
-Release:        0.8.git%{shortcommit}%{?dist}
+Release:        0.9.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
@@ -69,9 +69,13 @@ BuildArch:     noarch
 %if 0%{?with_check}
 # cyclic deps
 BuildRequires: golang(github.com/stretchr/objx)
+BuildRequires: golang(github.com/davecgh/go-spew/spew)
+BuildRequires: golang(github.com/pmezard/go-difflib/difflib)
 %endif
 
 Requires:      golang(github.com/stretchr/objx)
+Requires:      golang(github.com/davecgh/go-spew/spew)
+Requires:      golang(github.com/pmezard/go-difflib/difflib)
 
 Provides:      golang(%{import_path}) = %{version}-%{release}
 Provides:      golang(%{import_path}/assert) = %{version}-%{release}
@@ -174,6 +178,10 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Thu Mar 16 2017 Jan Chaloupka <jchaloup@redhat.com> - 1.0-0.9.git976c720
+- Bump to upstream 976c720a22c8eb4eb6a0b4348ad85ad12491a506
+  related: #1246684
+
 * Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.0-0.8.git089c718
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
