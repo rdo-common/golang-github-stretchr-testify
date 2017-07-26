@@ -44,7 +44,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        1.0
-Release:        0.9.git%{shortcommit}%{?dist}
+Release:        0.10.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
@@ -178,6 +178,9 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.0-0.10.git976c720
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Thu Mar 16 2017 Jan Chaloupka <jchaloup@redhat.com> - 1.0-0.9.git976c720
 - Bump to upstream 976c720a22c8eb4eb6a0b4348ad85ad12491a506
   related: #1246684
