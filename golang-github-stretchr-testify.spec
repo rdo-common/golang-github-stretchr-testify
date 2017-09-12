@@ -19,10 +19,7 @@
 # Build with debug info rpm
 %global with_debug 0
 # Run tests in check section
-# as long as there is circular dependency between 
-# golang-github-stretchr-testify and golang-github-stretchr-objx
-# there can not be test
-%global with_check 0
+%global with_check 1
 # Generate unit-test rpm
 %global with_unit_test 1
 
@@ -39,12 +36,12 @@
 # https://github.com/stretchr/testify
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     %{provider_prefix}
-%global commit          976c720a22c8eb4eb6a0b4348ad85ad12491a506
+%global commit          69483b4bd14f5845b5a1e55bca19e954e827f1d0
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
-Version:        1.0
-Release:        0.11.git%{shortcommit}%{?dist}
+Version:        1.1.4
+Release:        0.1.git%{shortcommit}%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
@@ -67,7 +64,6 @@ Summary:       %{summary}
 BuildArch:     noarch
 
 %if 0%{?with_check}
-# cyclic deps
 BuildRequires: golang(github.com/stretchr/objx)
 BuildRequires: golang(github.com/davecgh/go-spew/spew)
 BuildRequires: golang(github.com/pmezard/go-difflib/difflib)
@@ -178,6 +174,10 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Tue Sep 12 2017 Jan Chaloupka <jchaloup@redhat.com> - 1.1.4-0.1.git69483b4
+- Update to upstream v1.1.4
+  resolves: #1490397
+
 * Wed Aug 02 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.0-0.11.git976c720
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
