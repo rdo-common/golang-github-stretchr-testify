@@ -40,12 +40,12 @@
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
-Version:        1.1.4
-Release:        0.2.git%{shortcommit}%{?dist}
+Version:        1.2.2
+Release:        1%{?dist}
 Summary:        Tools for testifying that your code will behave as you intend
 License:        MIT
 URL:            https://%{provider_prefix}
-Source0:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
+Source0:        https://%{provider_prefix}/archive/v%{version}.tar.gz#/%{repo}-%{version}.tar.gz
 
 # e.g. el6 has ppc64 arch without gcc-go, so EA tag is required
 ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 aarch64 %{arm}}
@@ -108,9 +108,7 @@ providing packages with %{import_path} prefix.
 %endif
 
 %prep
-%setup -q -n %{repo}-%{commit}
-
-mv LICENCE.txt LICENSE.txt
+%setup -q -n %{repo}-%{version}
 
 %build
 
@@ -161,7 +159,7 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 
 %if 0%{?with_devel}
 %files devel -f devel.file-list
-%license LICENSE.txt
+%license LICENSE
 %doc README.md
 %dir %{gopath}/src/%{provider}.%{provider_tld}/%{project}
 %dir %{gopath}/src/%{import_path}
@@ -169,11 +167,14 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 
 %if 0%{?with_unit_test}
 %files unit-test -f unit-test.file-list
-%license LICENSE.txt
+%license LICENSE
 %doc README.md
 %endif
 
 %changelog
+* Thu Dec 13 2018 Alfredo Moralejo <amoralej@redhat.com> - 1.2.2-1
+- Update to upstream v1.2.2
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.4-0.2.git69483b4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
