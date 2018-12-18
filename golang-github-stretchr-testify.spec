@@ -23,6 +23,9 @@
 # Generate unit-test rpm
 %global with_unit_test 1
 
+# For builds in RDO for CentOS7 we need to get builds for x86_64 ppc64le and aarch64
+%global go_arches x86_64 aarch64 ppc64le
+
 %if 0%{?with_debug}
 %global _dwz_low_mem_die_limit 0
 %else
